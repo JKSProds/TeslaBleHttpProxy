@@ -182,7 +182,6 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 		} else {
 			// Cache miss for this endpoint
 			logging.Debug("VehicleData endpoint cache miss", "VIN", vin, "Endpoint", endpoint)
-			cachedData[endpoint] = cachedEntry.data
 			missingEndpoints = append(missingEndpoints, endpoint)
 		}
 	}
