@@ -176,11 +176,13 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 			} else {
 				// Cache expired for this endpoint
 				logging.Debug("VehicleData endpoint cache expired", "VIN", vin, "Endpoint", endpoint, "Age", age)
+				cachedData[endpoint] = cachedEntry.data
 				missingEndpoints = append(missingEndpoints, endpoint)
 			}
 		} else {
 			// Cache miss for this endpoint
 			logging.Debug("VehicleData endpoint cache miss", "VIN", vin, "Endpoint", endpoint)
+			cachedData[endpoint] = cachedEntry.data
 			missingEndpoints = append(missingEndpoints, endpoint)
 		}
 	}
