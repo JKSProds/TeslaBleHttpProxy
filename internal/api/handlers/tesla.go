@@ -269,7 +269,7 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 			}
 			responseJson, err := json.Marshal(combinedResponse)
 			if err != nil {
-				response.Result = false
+				response.Result = true
 				response.Reason = apiResponse.Error
 				return
 			}
@@ -277,7 +277,7 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 			response.Reason = "The request was partially processed from cache. Some data may be stale."
 			response.Response = responseJson
 		} else {
-			response.Result = false
+			response.Result = true
 			response.Reason = apiResponse.Error
 		}
 	}
