@@ -31,9 +31,7 @@ var (
 	vehicleDataCacheMux sync.RWMutex
 )
 
-var (
-	vehicleOutOfRange bool
-)
+var vehicleOutOfRange = true
 
 func commonDefer(w http.ResponseWriter, response *models.Response) {
 	var ret models.Ret
@@ -224,9 +222,13 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 	wg.Wait()
 
 	if !apiResponse.Result && strings.Contains(apiResponse.Error, "not in range") {
+		logging.Debug("Vehicle out of range. Setting bool vehicleOutOfRange", "VIN", vin)
+		fmt.Printf("Vehicle out of range. Setting bool vehicleOutOfRange")
 		vehicleOutOfRange = true
 	} else {
 		if vehicleOutOfRange {
+			logging.Debug("Vehicle was out of range. Re running command with autoWakeup!", "VIN", vin)
+			fmt.Printf("Vehicle was out of range. Re running command with autoWakeup!")
 			control.BleControlInstance.PushCommand(command, vin, map[string]interface{}{"endpoints": endpoints}, &apiResponse, true)
 			wg.Wait()
 		}
