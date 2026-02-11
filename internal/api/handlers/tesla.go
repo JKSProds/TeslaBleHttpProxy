@@ -31,6 +31,10 @@ var (
 	vehicleDataCacheMux sync.RWMutex
 )
 
+var (
+	vehicleOutOfRange bool
+)
+
 func commonDefer(w http.ResponseWriter, response *models.Response) {
 	var ret models.Ret
 	ret.Response = *response
@@ -219,6 +223,15 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
+	if !apiResponse.Result && strings.Contains(apiResponse.Error, "not in range") {
+		vehicleOutOfRange = true
+	} else {
+		if vehicleOutOfRange {
+			control.BleControlInstance.PushCommand(command, vin, map[string]interface{}{"endpoints": endpoints}, &apiResponse, true)
+			wg.Wait()
+		}
+	}
+
 	if apiResponse.Result {
 		// Parse the BLE response to extract individual endpoint data
 		var fetchedData map[string]json.RawMessage
@@ -257,6 +270,7 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
+		vehicleOutOfRange = false
 		response.Result = true
 		response.Reason = "The request was successfully processed."
 		response.Response = responseJson
@@ -270,7 +284,7 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 			}
 			responseJson, err := json.Marshal(combinedResponse)
 			if err != nil {
-				response.Result = true
+				response.Result = false
 				response.Reason = apiResponse.Error
 				return
 			}
@@ -278,7 +292,7 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 			response.Reason = "The request was partially processed from cache. Some data may be stale."
 			response.Response = responseJson
 		} else {
-			response.Result = true
+			response.Result = false
 			response.Reason = apiResponse.Error
 		}
 	}
