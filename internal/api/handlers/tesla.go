@@ -221,7 +221,7 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 
 	wg.Wait()
 
-	if !apiResponse.Result && strings.Contains(apiResponse.Error, "not in range") {
+	if !apiResponse.Result && strings.Contains(apiResponse.Error, "not in range") && !vehicleOutOfRange {
 		logging.Debug("Vehicle out of range. Setting bool vehicleOutOfRange", "VIN", vin)
 		fmt.Printf("Vehicle out of range. Setting bool vehicleOutOfRange")
 		vehicleOutOfRange = true
