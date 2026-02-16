@@ -278,22 +278,38 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 		response.Response = responseJson
 	} else {
 		// BLE fetch failed - try to serve from cache if available
+		var cs models.ChargeState
+
 		if len(cachedData) > 0 {
 			logging.Debug("BLE fetch failed, serving partial data from cache", "VIN", vin, "CachedEndpoints", len(cachedData))
 			combinedResponse := make(map[string]json.RawMessage)
 			for endpoint, data := range cachedData {
 				combinedResponse[endpoint] = data
+				if err := json.Unmarshal(data, &cs); err != nil {
+					cs = models.ChargeState{}
+				}
+				if vehicleOutOfRange {
+					cs.ChargingState = "Disconnected"
+				}
 			}
-			responseJson, err := json.Marshal(combinedResponse)
+
+			responseJson, err := json.Marshal(cs)
 			if err != nil {
 				response.Result = false
 				response.Reason = apiResponse.Error
+
 				return
 			}
+
 			response.Result = true
 			response.Reason = "The request was partially processed from cache. Some data may be stale."
 			response.Response = responseJson
 		} else {
+			cs.ChargingState = "Disconnected"
+			responseJson, err := json.Marshal(cs)
+			if err != nil {
+			}
+			response.Response = responseJson
 			response.Result = false
 			response.Reason = apiResponse.Error
 		}
