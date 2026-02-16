@@ -25,7 +25,7 @@ func ChargeStateFromBle(VehicleData *carserver.VehicleData) ChargeState {
 		BatteryRange:                   VehicleData.ChargeState.GetBatteryRange(),
 		EstBatteryRange:                VehicleData.ChargeState.GetEstBatteryRange(),
 		IdealBatteryRange:              VehicleData.ChargeState.GetIdealBatteryRange(),
-		BatteryLevel:                   VehicleData.ChargeState.GetBatteryLevel(),
+		BatteryLevel:                   VehicleData.ChargeState.GetUsableBatteryLevel(), //VehicleData.ChargeState.GetBatteryLevel(),
 		UsableBatteryLevel:             VehicleData.ChargeState.GetUsableBatteryLevel(),
 		ChargeEnergyAdded:              VehicleData.ChargeState.GetChargeEnergyAdded(),
 		ChargeMilesAddedRated:          VehicleData.ChargeState.GetChargeMilesAddedRated(),
