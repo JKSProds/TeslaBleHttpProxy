@@ -216,7 +216,7 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 	apiResponse.Ctx = r.Context()
 
 	wg.Add(1)
-	autoWakeup := r.URL.Query().Get("wakeup") == "true"
+	autoWakeup := r.URL.Query().Get("wakeup") == "true" || vehicleOutOfRange
 	control.BleControlInstance.PushCommand(command, vin, map[string]interface{}{"endpoints": endpoints}, &apiResponse, autoWakeup)
 
 	wg.Wait()
@@ -225,13 +225,6 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 		logging.Debug("Vehicle out of range. Setting bool vehicleOutOfRange", "VIN", vin)
 		fmt.Printf("Vehicle out of range. Setting bool vehicleOutOfRange")
 		vehicleOutOfRange = true
-	} else {
-		if vehicleOutOfRange {
-			logging.Debug("Vehicle was out of range. Re running command with autoWakeup!", "VIN", vin)
-			fmt.Printf("Vehicle was out of range. Re running command with autoWakeup!")
-			control.BleControlInstance.PushCommand(command, vin, map[string]interface{}{"endpoints": endpoints}, &apiResponse, true)
-			wg.Wait()
-		}
 	}
 
 	if apiResponse.Result {
