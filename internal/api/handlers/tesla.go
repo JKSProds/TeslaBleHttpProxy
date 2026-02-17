@@ -9,6 +9,7 @@ import (
 	"strings"
 	"sync"
 	"time"
+	"bytes"
 
 	"github.com/gorilla/mux"
 	"github.com/wimaha/TeslaBleHttpProxy/config"
