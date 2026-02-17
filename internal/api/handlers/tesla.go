@@ -269,7 +269,9 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 		vehicleOutOfRange = false
 		response.Result = true
 		response.Reason = "The request was successfully processed."
-		response.Response = responseJson
+		
+		clean := bytes.ReplaceAll(responseJson, []byte(`"<nil>"`), []byte(`null`))
+		response.Response = clean
 	} else {
 		// BLE fetch failed - try to serve from cache if available
 		var cs models.ChargeState
