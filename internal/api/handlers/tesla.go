@@ -294,15 +294,19 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
+			clean := bytes.ReplaceAll(responseJson, []byte(`"<nil>"`), []byte(`null`))
+			response.Response = clean
+			
 			response.Result = true
 			response.Reason = "The request was partially processed from cache. Some data may be stale."
-			response.Response = responseJson
 		} else {
 			cs.ChargingState = "Disconnected"
 			responseJson, err := json.Marshal(cs)
 			if err != nil {
 			}
-			response.Response = responseJson
+			clean := bytes.ReplaceAll(responseJson, []byte(`"<nil>"`), []byte(`null`))
+			response.Response = clean
+			
 			response.Result = false
 			response.Reason = apiResponse.Error
 		}
