@@ -9,7 +9,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	"bytes"
 
 	"github.com/gorilla/mux"
 	"github.com/wimaha/TeslaBleHttpProxy/config"
@@ -269,9 +268,7 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 		vehicleOutOfRange = false
 		response.Result = true
 		response.Reason = "The request was successfully processed."
-		
-		clean := bytes.ReplaceAll(responseJson, []byte(`"<nil>"`), []byte(`null`))
-		response.Response = clean
+		response.Response = responseJson
 	} else {
 		// BLE fetch failed - try to serve from cache if available
 		var cs models.ChargeState
@@ -297,21 +294,17 @@ func VehicleData(w http.ResponseWriter, r *http.Request) {
 				return
 			}
 
-			clean := bytes.ReplaceAll(responseJson, []byte(`"<nil>"`), []byte(`null`))
-			response.Response = clean
-			
 			response.Result = true
 			response.Reason = "The request was partially processed from cache. Some data may be stale."
+			response.Response = responseJson
 		} else {
 			cs.ChargingState = "Disconnected"
 			responseJson, err := json.Marshal(cs)
 			if err != nil {
 			}
-			clean := bytes.ReplaceAll(responseJson, []byte(`"<nil>"`), []byte(`null`))
-			response.Response = clean
-			
 			response.Result = false
 			response.Reason = apiResponse.Error
+			response.Response = responseJson
 		}
 	}
 }
