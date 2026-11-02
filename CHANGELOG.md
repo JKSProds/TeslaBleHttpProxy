@@ -4,6 +4,10 @@ All notable changes are listed here. `Unreleased` is what `main` and the Docker 
 
 ## Unreleased
 
+### Added
+
+- `allow_stale=true` for `vehicle_data`: if the car is asleep, the answer comes from the cache (at most 24 hours old) instead of 503, marked with `stale: true` and `cache_age_seconds`. The car is not woken. Without the parameter nothing changes. A car that fell asleep during the 9 minutes in which the sleep check is skipped is now also reported as "vehicle is sleeping" (503) and no longer as a failed handshake.
+
 ## 2.5.0 - 2026-10-19
 
 ### Upgrade notes
